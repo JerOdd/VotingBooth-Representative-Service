@@ -24,6 +24,49 @@ public interface MandateRepository extends JpaRepository<Mandate, UUID> {
 
     List<Mandate> findByPersonIdOrderByStartDateDesc(UUID personId);
 
+    // The sitting members of a chamber: open seats of its current term, with their current group and constituency.
+    // Group presidents also have a PRESIDENT membership, so only MEMBER / AFFILIATED rows give the group.
+    @Query(value = """
+            SELECT p.id AS "personId", p.civility AS "civility", p.first_name AS "firstName", p.last_name AS "lastName",
+                   g.name AS "groupName", g.short_name AS "groupShortName", g.color AS "groupColor",
+                   c.department_code AS "departmentCode", c.department_name AS "departmentName",
+                   c.number AS "constituencyNumber"
+            FROM term t
+            JOIN chamber ch ON ch.id = t.chamber_id
+            JOIN jurisdiction j ON j.id = ch.jurisdiction_id
+            JOIN mandate m ON m.term_id = t.id AND m.end_date IS NULL
+            JOIN person p ON p.id = m.person_id
+            LEFT JOIN constituency c ON c.id = m.constituency_id
+            LEFT JOIN group_membership gm ON gm.person_id = p.id AND gm.end_date IS NULL
+                                         AND gm.role IN ('MEMBER', 'AFFILIATED')
+            LEFT JOIN political_group g ON g.id = gm.group_id
+            WHERE j.iso_code = :countryCode AND ch.code = :chamberCode AND t.end_date IS NULL
+            ORDER BY p.sort_name, p.first_name
+            """, nativeQuery = true)
+    List<CurrentSeat> findCurrentSeats(@Param("countryCode") String countryCode, @Param("chamberCode") String chamberCode);
+
+    interface CurrentSeat {
+        UUID getPersonId();
+
+        String getCivility();
+
+        String getFirstName();
+
+        String getLastName();
+
+        String getGroupName();
+
+        String getGroupShortName();
+
+        String getGroupColor();
+
+        String getDepartmentCode();
+
+        String getDepartmentName();
+
+        Integer getConstituencyNumber();
+    }
+
     // replaces_mandate_id is only set if the replaced mandate is already synced; resolveReplacedMandates links the rest.
     @Modifying
     @Transactional

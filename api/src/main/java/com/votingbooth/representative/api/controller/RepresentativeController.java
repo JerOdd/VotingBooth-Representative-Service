@@ -1,6 +1,7 @@
 package com.votingbooth.representative.api.controller;
 
 import com.votingbooth.representative.api.model.dto.RepresentativeResponse;
+import com.votingbooth.representative.api.model.dto.RepresentativesResponse;
 import com.votingbooth.representative.api.service.RepresentativeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,11 @@ public class RepresentativeController {
 
     public RepresentativeController(RepresentativeService representativeService) {
         this.representativeService = representativeService;
+    }
+
+    @GetMapping
+    public ResponseEntity<RepresentativesResponse> getRepresentatives() {
+        return ResponseEntity.ok(representativeService.getRepresentatives());
     }
 
     @GetMapping("/{id}")
