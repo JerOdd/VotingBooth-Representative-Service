@@ -1,6 +1,6 @@
-package com.votingbooth.representativemodule.api.dataaccess;
+package com.votingbooth.representative.api.dataaccess.repository;
 
-import com.votingbooth.representativemodule.api.model.Representative;
+import com.votingbooth.representative.api.model.entity.Representative;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

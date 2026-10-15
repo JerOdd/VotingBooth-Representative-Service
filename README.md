@@ -1,2 +1,2 @@
-# VotingBooth-Representative-API
-VotingBooth Representative API
+# representative-service
+Representative Service for VotingBooth

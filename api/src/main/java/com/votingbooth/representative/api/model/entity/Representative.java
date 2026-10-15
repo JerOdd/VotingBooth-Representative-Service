@@ -1,4 +1,4 @@
-package com.votingbooth.representativemodule.api.model;
+package com.votingbooth.representative.api.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +11,7 @@ import java.util.UUID;
 @Table(name = "representatives")
 public class Representative {
     @Id
+    @Column(name = "id", nullable = false)
     private UUID id;
 
     @Column(name = "first_name", nullable = false)
@@ -21,6 +22,16 @@ public class Representative {
 
     @Column(name = "party_id", nullable = false)
     private UUID partyId;
+
+    protected Representative() {
+    }
+
+    public Representative(UUID id, String firstName, String lastName, UUID partyId) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.partyId = partyId;
+    }
 
     public UUID getId() {
         return id;

@@ -1,4 +1,4 @@
-package com.votingbooth.representativemodule.api;
+package com.votingbooth.representative.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
