@@ -2,8 +2,8 @@ package com.votingbooth.representative.api.service;
 
 import com.votingbooth.representative.api.model.dto.RepresentativeResponse;
 import com.votingbooth.representative.api.model.exception.RepresentativeNotFoundException;
-import com.votingbooth.representative.core.dataaccess.repository.RepresentativeRepository;
-import com.votingbooth.representative.core.model.entity.Representative;
+import com.votingbooth.representative.core.dataaccess.repository.PersonRepository;
+import com.votingbooth.representative.core.model.entity.Person;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,31 +15,34 @@ import static org.mockito.Mockito.*;
 
 public class RepresentativeServiceTests {
 
-    private RepresentativeRepository representativeRepository;
+    private PersonRepository personRepository;
     private RepresentativeService representativeService;
 
     @BeforeEach
     void setUp() {
-        representativeRepository = mock(RepresentativeRepository.class);
-        representativeService = new RepresentativeService(representativeRepository);
+        personRepository = mock(PersonRepository.class);
+        representativeService = new RepresentativeService(personRepository);
     }
 
     @Test
     void getRepresentative() {
         UUID id = UUID.randomUUID();
-        UUID partyId = UUID.randomUUID();
-        when(representativeRepository.findById(id))
-                .thenReturn(Optional.of(new Representative(id, "Jane", "Doe", partyId)));
+        Person person = mock(Person.class);
+        when(person.getId()).thenReturn(id);
+        when(person.getCivility()).thenReturn("Mme");
+        when(person.getFirstName()).thenReturn("Jane");
+        when(person.getLastName()).thenReturn("Doe");
+        when(personRepository.findById(id)).thenReturn(Optional.of(person));
 
         RepresentativeResponse response = representativeService.getRepresentative(id);
 
-        assertEquals(new RepresentativeResponse(id, "Jane", "Doe", partyId), response);
+        assertEquals(new RepresentativeResponse(id, "Mme", "Jane", "Doe"), response);
     }
 
     @Test
     void representativeNotFound() {
         UUID id = UUID.randomUUID();
-        when(representativeRepository.findById(id)).thenReturn(Optional.empty());
+        when(personRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(RepresentativeNotFoundException.class, () -> representativeService.getRepresentative(id));
     }

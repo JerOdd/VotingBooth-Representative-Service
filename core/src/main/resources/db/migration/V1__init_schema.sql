@@ -137,6 +137,7 @@ CREATE TABLE mandate (
     end_date DATE,
     start_reason VARCHAR(255),
     end_reason VARCHAR(255),
+    replaces_mandate_external_id VARCHAR(50), -- kept until the replaced mandate is synced, then resolved into replaces_mandate_id
     replaces_mandate_id UUID REFERENCES mandate (id),
     seat_number INTEGER,
     first_elected BOOLEAN,
@@ -212,11 +213,14 @@ CREATE TABLE recusal (
     source_id UUID NOT NULL REFERENCES data_source (id),
     external_id VARCHAR(50) NOT NULL,
     person_id UUID NOT NULL REFERENCES person (id),
+    term_id UUID NOT NULL REFERENCES term (id),
     scope TEXT,
     instance VARCHAR(255),
+    reading VARCHAR(255),
     target_type VARCHAR(255),
     target_description TEXT,
-    published_at DATE,
+    explanation TEXT,
+    published_at TIMESTAMP,
     PRIMARY KEY (id),
     UNIQUE (source_id, external_id)
 );
@@ -229,10 +233,14 @@ CREATE TABLE sync_run (
     id UUID NOT NULL DEFAULT gen_random_uuid(),
     source_id UUID NOT NULL REFERENCES data_source (id),
     trigger VARCHAR(20) NOT NULL CHECK (trigger IN ('SCHEDULED', 'MANUAL')),
-    archive_sha256 CHAR(64), -- lets a run skip an archive identical to the last successful one
+    archive_url VARCHAR(500) NOT NULL,
+    -- Sent back as If-None-Match / If-Modified-Since: a 304 means the archive wasn't regenerated and nothing is downloaded.
+    archive_etag VARCHAR(255),
+    archive_last_modified TIMESTAMP,
+    archive_sha256 VARCHAR(64), -- the archive can be regenerated with identical content, so a new ETag alone isn't a change
     started_at TIMESTAMP NOT NULL,
     finished_at TIMESTAMP,
-    status VARCHAR(20) NOT NULL CHECK (status IN ('RUNNING', 'SUCCEEDED', 'FAILED')),
+    status VARCHAR(20) NOT NULL CHECK (status IN ('RUNNING', 'SKIPPED', 'SUCCEEDED', 'FAILED')),
     created INTEGER NOT NULL DEFAULT 0,
     updated INTEGER NOT NULL DEFAULT 0,
     unchanged INTEGER NOT NULL DEFAULT 0,
@@ -251,7 +259,7 @@ CREATE TABLE raw_record (
     source_id UUID NOT NULL REFERENCES data_source (id),
     entity VARCHAR(50) NOT NULL, -- source vocabulary, e.g. 'acteur', 'organe', 'deport'
     external_id VARCHAR(50) NOT NULL,
-    sha256 CHAR(64) NOT NULL,
+    sha256 VARCHAR(64) NOT NULL,
     s3_key VARCHAR(500) NOT NULL,
     s3_version_id VARCHAR(255),
     last_seen_run_id UUID NOT NULL REFERENCES sync_run (id),
