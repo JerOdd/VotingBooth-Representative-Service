@@ -11,6 +11,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jackson</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.votingbooth</groupId>
             <artifactId>representative-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
