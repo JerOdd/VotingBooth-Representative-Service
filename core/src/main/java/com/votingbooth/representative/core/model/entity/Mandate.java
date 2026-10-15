@@ -43,6 +43,9 @@ public class Mandate {
     @Column(name = "end_reason", nullable = true)
     private String endReason;
 
+    @Column(name = "replaces_mandate_external_id", nullable = true)
+    private String replacesMandateExternalId;
+
     @Column(name = "replaces_mandate_id", nullable = true)
     private UUID replacesMandateId;
 
@@ -93,6 +96,10 @@ public class Mandate {
 
     public String getEndReason() {
         return endReason;
+    }
+
+    public String getReplacesMandateExternalId() {
+        return replacesMandateExternalId;
     }
 
     public UUID getReplacesMandateId() {

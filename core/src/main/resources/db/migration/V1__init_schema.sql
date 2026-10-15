@@ -137,6 +137,7 @@ CREATE TABLE mandate (
     end_date DATE,
     start_reason VARCHAR(255),
     end_reason VARCHAR(255),
+    replaces_mandate_external_id VARCHAR(50), -- kept until the replaced mandate is synced, then resolved into replaces_mandate_id
     replaces_mandate_id UUID REFERENCES mandate (id),
     seat_number INTEGER,
     first_elected BOOLEAN,

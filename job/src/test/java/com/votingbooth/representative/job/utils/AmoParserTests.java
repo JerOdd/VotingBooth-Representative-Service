@@ -6,8 +6,6 @@ import com.votingbooth.representative.job.model.amo.Organe;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -27,7 +25,7 @@ public class AmoParserTests {
 
     @Test
     void acteur() {
-        Acteur acteur = parser.parseActeur(fixture("acteur/PA794750.json"));
+        Acteur acteur = parser.parseActeur(AmoFixtures.bytes("acteur/PA794750.json"));
 
         assertEquals("PA794750", acteur.uid());
         assertEquals("M.", acteur.etatCivil().ident().civ());
@@ -44,7 +42,7 @@ public class AmoParserTests {
 
     @Test
     void seatReplacingAnotherMandate() {
-        Acteur acteur = parser.parseActeur(fixture("acteur/PA794750.json"));
+        Acteur acteur = parser.parseActeur(AmoFixtures.bytes("acteur/PA794750.json"));
 
         Acteur.Mandat seat = mandate(acteur, "PM881146");
 
@@ -64,7 +62,7 @@ public class AmoParserTests {
 
     @Test
     void groupMembership() {
-        Acteur acteur = parser.parseActeur(fixture("acteur/PA794750.json"));
+        Acteur acteur = parser.parseActeur(AmoFixtures.bytes("acteur/PA794750.json"));
 
         Acteur.Mandat membership = mandate(acteur, "PM858616");
 
@@ -76,7 +74,7 @@ public class AmoParserTests {
 
     @Test
     void singleMandateAndAddressAsObjects() {
-        Acteur acteur = parser.parseActeur(fixture("acteur/PA720888.json"));
+        Acteur acteur = parser.parseActeur(AmoFixtures.bytes("acteur/PA720888.json"));
 
         assertEquals(1, acteur.mandatList().size());
         assertEquals("PM772923", acteur.mandatList().getFirst().uid());
@@ -87,7 +85,7 @@ public class AmoParserTests {
 
     @Test
     void nilAddresses() {
-        Acteur acteur = parser.parseActeur(fixture("acteur/PA427486.json"));
+        Acteur acteur = parser.parseActeur(AmoFixtures.bytes("acteur/PA427486.json"));
 
         assertNull(acteur.adresses());
         assertTrue(acteur.adresseList().isEmpty());
@@ -96,7 +94,7 @@ public class AmoParserTests {
 
     @Test
     void deceasedWithoutElection() {
-        Acteur acteur = parser.parseActeur(fixture("acteur/PA497.json"));
+        Acteur acteur = parser.parseActeur(AmoFixtures.bytes("acteur/PA497.json"));
 
         assertEquals(LocalDate.of(2017, 9, 15), acteur.etatCivil().dateDeces());
         Acteur.Mandat mandat = acteur.mandatList().getFirst();
@@ -107,7 +105,7 @@ public class AmoParserTests {
 
     @Test
     void politicalGroup() {
-        Organe organe = parser.parseOrgane(fixture("organe/PO845401.json"));
+        Organe organe = parser.parseOrgane(AmoFixtures.bytes("organe/PO845401.json"));
 
         assertEquals("PO845401", organe.uid());
         assertEquals("GP", organe.codeType());
@@ -121,7 +119,7 @@ public class AmoParserTests {
 
     @Test
     void legislature() {
-        Organe organe = parser.parseOrgane(fixture("organe/PO838901.json"));
+        Organe organe = parser.parseOrgane(AmoFixtures.bytes("organe/PO838901.json"));
 
         assertEquals("ASSEMBLEE", organe.codeType());
         assertEquals(17, organe.legislature());
@@ -130,7 +128,7 @@ public class AmoParserTests {
 
     @Test
     void constituency() {
-        Organe organe = parser.parseOrgane(fixture("organe/PO839063.json"));
+        Organe organe = parser.parseOrgane(AmoFixtures.bytes("organe/PO839063.json"));
 
         assertEquals("CIRCONSCRIPTION", organe.codeType());
         assertEquals("5ème circonscription de l'Ain", organe.libelle());
@@ -142,7 +140,7 @@ public class AmoParserTests {
 
     @Test
     void party() {
-        Organe organe = parser.parseOrgane(fixture("organe/PO761239.json"));
+        Organe organe = parser.parseOrgane(AmoFixtures.bytes("organe/PO761239.json"));
 
         assertEquals("PARPOL", organe.codeType());
         assertEquals("Rassemblement national", organe.libelle());
@@ -152,7 +150,7 @@ public class AmoParserTests {
 
     @Test
     void recusal() {
-        Deport deport = parser.parseDeport(fixture("deport/DPTR5L17PA793992D0003.json"));
+        Deport deport = parser.parseDeport(AmoFixtures.bytes("deport/DPTR5L17PA793992D0003.json"));
 
         assertEquals("DPTR5L17PA793992D0003", deport.uid());
         assertEquals(17, deport.legislature());
@@ -170,19 +168,12 @@ public class AmoParserTests {
 
     @Test
     void wrongRoot() {
-        assertThrows(IllegalArgumentException.class, () -> parser.parseOrgane(fixture("acteur/PA497.json")));
+        assertThrows(IllegalArgumentException.class, () -> parser.parseOrgane(AmoFixtures.bytes("acteur/PA497.json")));
     }
 
     private static Acteur.Mandat mandate(Acteur acteur, String uid) {
         return acteur.mandatList().stream().filter(m -> uid.equals(m.uid())).findFirst().orElseThrow();
     }
 
-    private static byte[] fixture(String path) {
-        try (InputStream in = AmoParserTests.class.getResourceAsStream("/amo/" + path)) {
-            return in.readAllBytes();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
 }

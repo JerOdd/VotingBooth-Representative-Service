@@ -5,6 +5,7 @@ import com.votingbooth.representative.core.model.entity.SyncStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,6 +13,6 @@ import java.util.UUID;
 public interface SyncRunRepository extends JpaRepository<SyncRun, UUID> {
 
     // The job sends this run's ETag / Last-Modified / SHA-256 back to the source to detect an unchanged archive.
-    Optional<SyncRun> findFirstBySourceIdAndArchiveUrlAndStatusOrderByStartedAtDesc(UUID sourceId, String archiveUrl, SyncStatus status);
+    Optional<SyncRun> findFirstBySourceIdAndArchiveUrlAndStatusInOrderByStartedAtDesc(UUID sourceId, String archiveUrl, Collection<SyncStatus> statuses);
 
 }

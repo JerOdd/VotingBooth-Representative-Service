@@ -65,6 +65,46 @@ public class SyncRun {
     protected SyncRun() {
     }
 
+    public SyncRun(UUID sourceId, SyncTrigger trigger, String archiveUrl, LocalDateTime startedAt) {
+        this.id = UUID.randomUUID();
+        this.sourceId = sourceId;
+        this.trigger = trigger;
+        this.archiveUrl = archiveUrl;
+        this.startedAt = startedAt;
+        this.status = SyncStatus.RUNNING;
+        this.created = 0;
+        this.updated = 0;
+        this.unchanged = 0;
+        this.failed = 0;
+    }
+
+    // Kept on skipped runs too, so the next run can always send the latest ETag / Last-Modified back to the source.
+    public void recordArchive(String etag, LocalDateTime lastModified, String sha256) {
+        this.archiveEtag = etag;
+        this.archiveLastModified = lastModified;
+        this.archiveSha256 = sha256;
+    }
+
+    public void skip(LocalDateTime finishedAt) {
+        this.status = SyncStatus.SKIPPED;
+        this.finishedAt = finishedAt;
+    }
+
+    public void succeed(int created, int updated, int unchanged, int failed, LocalDateTime finishedAt) {
+        this.status = SyncStatus.SUCCEEDED;
+        this.created = created;
+        this.updated = updated;
+        this.unchanged = unchanged;
+        this.failed = failed;
+        this.finishedAt = finishedAt;
+    }
+
+    public void fail(String error, LocalDateTime finishedAt) {
+        this.status = SyncStatus.FAILED;
+        this.error = error;
+        this.finishedAt = finishedAt;
+    }
+
     public UUID getId() {
         return id;
     }
