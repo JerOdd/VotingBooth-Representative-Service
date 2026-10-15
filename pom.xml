@@ -15,7 +15,9 @@
 	<name>representative-service</name>
 	<description>Representative Service for VotingBooth</description>
 	<modules>
+		<module>core</module>
 		<module>api</module>
+		<module>job</module>
 	</modules>
 	<properties>
 		<java.version>21</java.version>

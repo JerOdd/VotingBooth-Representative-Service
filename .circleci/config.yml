@@ -29,7 +29,9 @@ jobs:
           command: |
             docker login -u $DOCKER_USER -p $DOCKER_PASS $DOCKER_REGISTRY
             docker build -f api/Dockerfile -t $DOCKER_REGISTRY/representative-api:latest .
+            docker build -f job/Dockerfile -t $DOCKER_REGISTRY/representative-job:latest .
             docker push $DOCKER_REGISTRY/representative-api:latest
+            docker push $DOCKER_REGISTRY/representative-job:latest
 
 workflows:
   test:

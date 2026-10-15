@@ -1,9 +1,9 @@
 package com.votingbooth.representative.api.service;
 
-import com.votingbooth.representative.api.dataaccess.repository.RepresentativeRepository;
 import com.votingbooth.representative.api.model.dto.RepresentativeResponse;
-import com.votingbooth.representative.api.model.entity.Representative;
 import com.votingbooth.representative.api.model.exception.RepresentativeNotFoundException;
+import com.votingbooth.representative.core.dataaccess.repository.RepresentativeRepository;
+import com.votingbooth.representative.core.model.entity.Representative;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

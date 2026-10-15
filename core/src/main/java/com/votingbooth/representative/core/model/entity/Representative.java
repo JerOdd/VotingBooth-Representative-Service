@@ -1,4 +1,4 @@
-package com.votingbooth.representative.api.model.entity;
+package com.votingbooth.representative.core.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
