@@ -5,8 +5,9 @@ services:
     image: postgres:16
     container_name: representative-postgres
     restart: always
+    # 5433 on the host: 5432 is often taken by a native Postgres or another service's compose.
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_DB: representatives
       POSTGRES_USER: postgres
@@ -19,11 +20,16 @@ services:
     container_name: representative-s3
     restart: always
     # SeaweedFS rejects signed requests unless an identity is configured, even locally.
-    command: server -s3 -s3.config=/etc/seaweedfs/s3.json -dir=/data
+    # The file is written at startup, so nothing has to be mounted from the project folder.
+    environment:
+      S3_IDENTITY: >-
+        {"identities": [{"name": "local",
+                         "credentials": [{"accessKey": "local", "secretKey": "local-secret"}],
+                         "actions": ["Admin", "Read", "Write", "List", "Tagging"]}]}
+    entrypoint: ["sh", "-c", "echo \"$$S3_IDENTITY\" > /tmp/s3.json && exec weed server -s3 -s3.config=/tmp/s3.json -dir=/data"]
     ports:
       - "9000:8333"
     volumes:
-      - ./docker/seaweedfs-s3.json:/etc/seaweedfs/s3.json:ro
       - s3-data:/data
 
   # Creates the raw bucket with versioning on, as it must be on OVH.
