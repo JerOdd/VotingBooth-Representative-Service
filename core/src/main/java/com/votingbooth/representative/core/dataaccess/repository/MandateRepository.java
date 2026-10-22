@@ -28,7 +28,7 @@ public interface MandateRepository extends JpaRepository<Mandate, UUID> {
     // Group presidents also have a PRESIDENT membership, so only MEMBER / AFFILIATED rows give the group.
     @Query(value = """
             SELECT p.id AS "personId", p.civility AS "civility", p.first_name AS "firstName", p.last_name AS "lastName",
-                   g.name AS "groupName", g.short_name AS "groupShortName", g.color AS "groupColor",
+                   p.photo_url AS "photoUrl", g.name AS "groupName", g.short_name AS "groupShortName", g.color AS "groupColor",
                    c.department_code AS "departmentCode", c.department_name AS "departmentName",
                    c.number AS "constituencyNumber"
             FROM term t
@@ -53,6 +53,8 @@ public interface MandateRepository extends JpaRepository<Mandate, UUID> {
         String getFirstName();
 
         String getLastName();
+
+        String getPhotoUrl();
 
         String getGroupName();
 

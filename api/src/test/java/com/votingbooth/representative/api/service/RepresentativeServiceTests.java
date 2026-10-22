@@ -38,6 +38,7 @@ public class RepresentativeServiceTests {
         when(seat.getCivility()).thenReturn("Mme");
         when(seat.getFirstName()).thenReturn("Audrey");
         when(seat.getLastName()).thenReturn("Abadie-Amiel");
+        when(seat.getPhotoUrl()).thenReturn("https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/793218.jpg");
         when(seat.getGroupName()).thenReturn("Libertés, Indépendants, Outre-mer et Territoires");
         when(seat.getGroupShortName()).thenReturn("LIOT");
         when(seat.getGroupColor()).thenReturn("#FFD96F");
@@ -49,7 +50,7 @@ public class RepresentativeServiceTests {
         RepresentativesResponse response = representativeService.getRepresentatives();
 
         assertEquals(List.of(new RepresentativeSummary(id, "Mme", "Audrey", "Abadie-Amiel",
-                "Libertés, Indépendants, Outre-mer et Territoires", "LIOT", "#FFD96F", "09", "Ariège", 2)),
+                "https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/793218.jpg", "Libertés, Indépendants, Outre-mer et Territoires", "LIOT", "#FFD96F", "09", "Ariège", 2)),
                 response.representatives());
     }
 

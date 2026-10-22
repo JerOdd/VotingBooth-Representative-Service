@@ -30,6 +30,11 @@ public class ActeurSyncService {
     private static final String GROUP = "GP";
     private static final String PARTY = "PARPOL";
 
+    // The Assemblée only publishes photos of the current legislature's deputies, under the uid without its "PA".
+    private static final int PHOTO_LEGISLATURE = 17;
+    private static final String PHOTO_URL = "https://www.assemblee-nationale.fr/dyn/static/tribun/" + PHOTO_LEGISLATURE
+            + "/photos/carre/%s.jpg";
+
     // "Url sénateur" (the Sénat is out of scope) and "Télécopie" (fax) are left out on purpose.
     private static final Map<String, ContactType> CONTACT_TYPES = Map.ofEntries(
             entry("Mèl", ContactType.EMAIL),
@@ -114,8 +119,17 @@ public class ActeurSyncService {
                 profession == null ? null : profession.libelleCourant(),
                 profession == null || profession.socProcINSEE() == null ? null : profession.socProcINSEE().catSocPro(),
                 acteur.uriHatvp(),
+                photoUrl(acteur),
                 LocalDateTime.now(clock)
         );
+    }
+
+    // Anyone else would get a broken link, so they have no photo.
+    static String photoUrl(Acteur acteur) {
+        boolean currentDeputy = acteur.mandatList().stream()
+                .anyMatch(mandat -> SEAT.equals(mandat.typeOrgane())
+                        && Integer.valueOf(PHOTO_LEGISLATURE).equals(mandat.legislature()));
+        return currentDeputy ? PHOTO_URL.formatted(acteur.uid().replaceFirst("^PA", "")) : null;
     }
 
     private void syncContacts(SyncContext context, Acteur acteur) {

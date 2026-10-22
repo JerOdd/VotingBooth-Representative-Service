@@ -33,6 +33,7 @@ public class RepresentativeService {
                         seat.getCivility(),
                         seat.getFirstName(),
                         seat.getLastName(),
+                        seat.getPhotoUrl(),
                         seat.getGroupName(),
                         seat.getGroupShortName(),
                         seat.getGroupColor(),

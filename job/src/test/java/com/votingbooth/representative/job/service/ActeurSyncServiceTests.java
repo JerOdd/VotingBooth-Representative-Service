@@ -58,7 +58,8 @@ public class ActeurSyncServiceTests {
         verify(personRepository).upsert(SOURCE_ID, "PA794750", "M.", "Thierry", "Liger", "Liger",
                 LocalDate.of(1970, 5, 27), "Nogent-Le-Rotrou", null, "Chef d'entreprise",
                 "Chefs d'entreprise de 10 salariés ou plus",
-                "https://www.hatvp.fr/pages_nominatives/liger-thierry-22478", LocalDateTime.of(2026, 10, 15, 10, 0));
+                "https://www.hatvp.fr/pages_nominatives/liger-thierry-22478",
+                "https://www.assemblee-nationale.fr/dyn/static/tribun/17/photos/carre/794750.jpg", LocalDateTime.of(2026, 10, 15, 10, 0));
     }
 
     @Test
@@ -118,8 +119,16 @@ public class ActeurSyncServiceTests {
         acteurSyncService.sync(CONTEXT, acteur("PA720888"));
 
         verify(personRepository).upsert(eq(SOURCE_ID), eq("PA720888"), any(), any(), any(), any(), any(), any(), any(),
-                any(), any(), any(), any());
+                any(), any(), any(), any(), any());
         verifyNoInteractions(mandateRepository);
+    }
+
+    @Test
+    void noPhotoOutsideCurrentLegislature() {
+        acteurSyncService.sync(CONTEXT, acteur("PA720888"));
+
+        verify(personRepository).upsert(eq(SOURCE_ID), eq("PA720888"), any(), any(), any(), any(), any(), any(), any(),
+                any(), any(), any(), isNull(), any());
     }
 
     @Test
